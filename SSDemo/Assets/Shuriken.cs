@@ -4,7 +4,7 @@ using System.Collections;
 public class Shuriken : MonoBehaviour
 {
     public bool destroyed;
-    bool holding, start;
+    bool holding, start, collided;
     Vector3 velocity, position, lastPos;
     Rigidbody2D rb;
     SpawnEnemies enemies;
@@ -26,6 +26,7 @@ public class Shuriken : MonoBehaviour
     {
         if (destroyed)
             DestroyShuriken();
+        
 	}
 
     void FixedUpdate()
@@ -52,36 +53,31 @@ public class Shuriken : MonoBehaviour
 
     void DestroyShuriken()
     {
-        if(transform.position.y > 6 || transform.position.x < 3.8f ||
-            transform.position.x > 3.8f)
-        {
-            Destroy(this.gameObject);
-        }
+        Destroy(this.gameObject);
     }
 
     void OnMouseDown()
     {
         holding = true;
         position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-        CalculateEndPoint();
 
     }
 
     void CalculateEndPoint()
     {
-        Debug.Log((position - Input.mousePosition).magnitude);
+        float distance = Vector3.Distance(position, Input.mousePosition);
+        distance = distance / 100;
 
-        if((position - Input.mousePosition).magnitude > 180)
+        if (distance > 2)
         {
             lastPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
             holding = false;
         }
     }
 
-    void OnMouseUp()
+    void OnMouseDrag()
     {
-        //holding = false;
-        //lastPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+        CalculateEndPoint();
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -89,6 +85,10 @@ public class Shuriken : MonoBehaviour
         if(col.gameObject.tag == "Enemy")
         {
             enemies.destroyed = true;
+            destroyed = true;
+        }
+        if(col.gameObject.tag == "Castle")
+        {
             destroyed = true;
         }
     }
