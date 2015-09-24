@@ -8,6 +8,7 @@ public class Shuriken : MonoBehaviour
     Vector3 velocity, position, lastPos;
     Rigidbody2D rb;
     SpawnEnemies enemies;
+    SpawnEnemy2 enemy2;
 
 	// Use this for initialization
 	void Start ()
@@ -19,6 +20,7 @@ public class Shuriken : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.isKinematic = true;
         enemies = GameObject.FindGameObjectWithTag("Castle").GetComponent<SpawnEnemies>();
+        enemy2 = GameObject.FindGameObjectWithTag("Castle").GetComponent<SpawnEnemy2>();
 	}
 	
 	// Update is called once per frame
@@ -45,7 +47,7 @@ public class Shuriken : MonoBehaviour
         {
             rb.isKinematic = false;
             Vector3 direction = lastPos - position;
-            Debug.Log(direction + " direction");
+            //Debug.Log(direction + " direction");
             transform.Translate(direction * 3.5f * Time.deltaTime);
         }
     }
@@ -90,6 +92,21 @@ public class Shuriken : MonoBehaviour
         if(col.gameObject.tag == "Castle")
         {
             destroyed = true;
+        }
+        if(col.gameObject.tag == "Enemy2")
+        {
+            enemy2.once = true;
+            destroyed = true;
+            if (enemy2.once && enemy2.twice)
+            {
+                enemy2.destroyed = true;
+                destroyed = true;
+            }
+
+        }
+        if(col.gameObject.tag == "Enemy2" && enemy2.once && !enemy2.twice)
+        {
+            enemy2.twice = true;
         }
     }
 } // jos hiiri on kulkenut tietyn matkan
